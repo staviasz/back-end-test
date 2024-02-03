@@ -112,4 +112,18 @@ describe('AddUserController', () => {
     expect(httpResponse.statusCode).toBe(400);
     expect(httpResponse.body).toEqual(new Error('any_message'));
   });
+
+  it('Should return 200 on success', async () => {
+    const sut = new AddUserController(addAccountStub);
+    const httpResponse = await sut.execute({
+      body: {
+        name: 'any_name',
+        email: 'any_email@mail.com',
+        password: 'any_password',
+        passwordConfirmation: 'any_password',
+      },
+    });
+    expect(httpResponse.statusCode).toBe(200);
+    expect(httpResponse.body).toBe('token');
+  });
 });
