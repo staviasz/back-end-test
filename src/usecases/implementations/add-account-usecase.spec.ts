@@ -5,6 +5,12 @@ import { LoadAccountByEmailRepository } from '../protocols/db/load-account-by-em
 import { Hasher } from '../protocols/cryptography/hasher';
 import { AddAccountRepository, AddAccountRepositoryData } from '../protocols/db/add-account-repository';
 
+jest.mock('jsonwebtoken', () => ({
+  sign(): string {
+    return 'any_token';
+  },
+}));
+
 const makeFakeAddAccountData = (): AddAccountData => ({
   name: 'any_name',
   email: 'any_email@mail.com',
@@ -111,5 +117,11 @@ describe('AddAccountUseCase', () => {
       password: 'hashed_password',
       createdAt: new Date(),
     });
+  });
+
+  it('Should return token on success', async () => {
+    const { sut } = makeSut();
+    const result = await sut.perform(makeFakeAddAccountData());
+    expect(result).toBe('any_token');
   });
 });
