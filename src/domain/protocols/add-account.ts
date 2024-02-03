@@ -1,9 +1,9 @@
-export interface AccountData {
+export interface AddAccountData {
   name: string;
   email: string;
   password: string;
 }
 
 export interface AddAccount {
-  perform: (accountData: AccountData) => Promise<string>;
+  perform: (data: AddAccountData) => Promise<string>;
 }
