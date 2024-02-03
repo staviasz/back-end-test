@@ -10,6 +10,12 @@ export class AddUserController implements Controller {
         body: new RequiredFieldError('The name field is required'),
       };
     }
+    if (!httpRequest.body.email) {
+      return {
+        statusCode: 400,
+        body: new RequiredFieldError('The email field is required'),
+      };
+    }
     return Promise.resolve({ statusCode: 0, body: 'data' });
   }
 }
