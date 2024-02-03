@@ -33,10 +33,13 @@ export class AddUserController implements Controller {
         body: new Error('Password is different from passwordConfirmation'),
       };
     }
-    await this.addAccount.perform({
+    const addAccountResult = await this.addAccount.perform({
       name: httpRequest.body.name,
       email: httpRequest.body.email,
       password: httpRequest.body.password,
     });
+    if (addAccountResult instanceof Error) {
+      return { statusCode: 400, body: addAccountResult };
+    }
   }
 }
