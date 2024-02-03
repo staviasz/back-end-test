@@ -1,8 +1,11 @@
+import { AddAccount } from 'src/domain/protocols/add-account';
 import { Controller } from '../contracts/controller';
 import { RequiredFieldError } from '../errors/required-field-error';
 import { HttpRequest, HttpResponse } from '../types/http';
 
 export class AddUserController implements Controller {
+  constructor(private readonly addAccount: AddAccount) {}
+
   async execute(httpRequest: HttpRequest): Promise<HttpResponse> {
     if (!httpRequest.body.name) {
       return {
@@ -30,5 +33,10 @@ export class AddUserController implements Controller {
         body: new Error('Password is different from passwordConfirmation'),
       };
     }
+    await this.addAccount.perform({
+      name: httpRequest.body.name,
+      email: httpRequest.body.email,
+      password: httpRequest.body.password,
+    });
   }
 }
