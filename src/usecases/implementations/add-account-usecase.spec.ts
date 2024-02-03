@@ -81,4 +81,11 @@ describe('AddAccountUseCase', () => {
     await sut.perform(makeFakeAddAccountData());
     expect(hashSpy).toHaveBeenCalledWith('any_password');
   });
+
+  it('Should throw if Hasher throws', async () => {
+    const { sut, hasherStub } = makeSut();
+    jest.spyOn(hasherStub, 'hash').mockReturnValueOnce(Promise.reject(new Error('any_message')));
+    const promise = sut.perform(makeFakeAddAccountData());
+    await expect(promise).rejects.toThrow(new Error('any_message'));
+  });
 });
