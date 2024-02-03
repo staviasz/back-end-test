@@ -53,4 +53,13 @@ describe('AddAccountUseCase', () => {
     const result = await sut.perform(makeFakeAddAccountData());
     expect(result).toEqual(new Error(`Email 'any_email@mail.com' is invalid`));
   });
+
+  it('Should throw if LoadAccountByEmailRepository throws', async () => {
+    const { sut, loadAccountByEmailRepositoryStub } = makeSut();
+    jest
+      .spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail')
+      .mockReturnValueOnce(Promise.reject(new Error('any_message')));
+    const promise = sut.perform(makeFakeAddAccountData());
+    await expect(promise).rejects.toThrow(new Error('any_message'));
+  });
 });
