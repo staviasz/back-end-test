@@ -27,4 +27,30 @@ describe('AddUserController', () => {
     expect(httpResponse.statusCode).toBe(400);
     expect(httpResponse.body).toEqual(new RequiredFieldError('The email field is required'));
   });
+
+  it('Should return 400 if password field is not provided', async () => {
+    const sut = new AddUserController();
+    const httpResponse = await sut.execute({
+      body: {
+        name: 'any_name',
+        email: 'any_email@mail.com',
+        passwordConfirmation: 'any_password',
+      },
+    });
+    expect(httpResponse.statusCode).toBe(400);
+    expect(httpResponse.body).toEqual(new RequiredFieldError('The password field is required'));
+  });
+
+  it('Should return 400 if passwordConfirmation field is not provided', async () => {
+    const sut = new AddUserController();
+    const httpResponse = await sut.execute({
+      body: {
+        name: 'any_name',
+        email: 'any_email@mail.com',
+        password: 'any_password',
+      },
+    });
+    expect(httpResponse.statusCode).toBe(400);
+    expect(httpResponse.body).toEqual(new RequiredFieldError('The passwordConfirmation field is required'));
+  });
 });
