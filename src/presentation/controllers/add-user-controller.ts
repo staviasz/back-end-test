@@ -9,25 +9,26 @@ export class AddUserController implements Controller {
         statusCode: 400,
         body: new RequiredFieldError('The name field is required'),
       };
-    }
-    if (!httpRequest.body.email) {
+    } else if (!httpRequest.body.email) {
       return {
         statusCode: 400,
         body: new RequiredFieldError('The email field is required'),
       };
-    }
-    if (!httpRequest.body.password) {
+    } else if (!httpRequest.body.password) {
       return {
         statusCode: 400,
         body: new RequiredFieldError('The password field is required'),
       };
-    }
-    if (!httpRequest.body.passwordConfirmation) {
+    } else if (!httpRequest.body.passwordConfirmation) {
       return {
         statusCode: 400,
         body: new RequiredFieldError('The passwordConfirmation field is required'),
       };
+    } else if (httpRequest.body.password !== httpRequest.body.passwordConfirmation) {
+      return {
+        statusCode: 400,
+        body: new Error('Password is different from passwordConfirmation'),
+      };
     }
-    return Promise.resolve({ statusCode: 0, body: 'data' });
   }
 }
