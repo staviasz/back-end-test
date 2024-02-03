@@ -53,4 +53,18 @@ describe('AddUserController', () => {
     expect(httpResponse.statusCode).toBe(400);
     expect(httpResponse.body).toEqual(new RequiredFieldError('The passwordConfirmation field is required'));
   });
+
+  it('Should return 400 if password is different from passwordConfirmation', async () => {
+    const sut = new AddUserController();
+    const httpResponse = await sut.execute({
+      body: {
+        name: 'any_name',
+        email: 'any_email@mail.com',
+        password: 'any_password',
+        passwordConfirmation: 'invalid_password',
+      },
+    });
+    expect(httpResponse.statusCode).toBe(400);
+    expect(httpResponse.body).toEqual(new Error('Password is different from passwordConfirmation'));
+  });
 });
