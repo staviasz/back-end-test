@@ -2,6 +2,7 @@ import { AddAccount, AddAccountData } from 'src/domain/protocols/add-account';
 import { LoadAccountByEmailRepository } from '../protocols/db/load-account-by-email-repository';
 import { Hasher } from '../protocols/cryptography/hasher';
 import { AddAccountRepository } from '../protocols/db/add-account-repository';
+import * as jwt from 'jsonwebtoken';
 
 export class AddAccountUseCase implements AddAccount {
   constructor(
@@ -17,7 +18,13 @@ export class AddAccountUseCase implements AddAccount {
     }
     const hashedPassword = await this.hasher.hash(data.password);
     const { email, name } = data;
-    await this.addAccountRepository.add({ name, email, password: hashedPassword, createdAt: new Date() });
-    return '';
+    const account = await this.addAccountRepository.add({
+      name,
+      email,
+      password: hashedPassword,
+      createdAt: new Date(),
+    });
+    const token = jwt.sign(account.id, '123nm9dl@l$lsisOpsksm2');
+    return token;
   }
 }
