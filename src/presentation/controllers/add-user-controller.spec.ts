@@ -97,4 +97,19 @@ describe('AddUserController', () => {
       password: 'any_password',
     });
   });
+
+  it('Should return 400 if AddAccount returns an Error', async () => {
+    const sut = new AddUserController(addAccountStub);
+    jest.spyOn(addAccountStub, 'perform').mockReturnValueOnce(Promise.resolve(new Error('any_message')));
+    const httpResponse = await sut.execute({
+      body: {
+        name: 'any_name',
+        email: 'any_email@mail.com',
+        password: 'any_password',
+        passwordConfirmation: 'any_password',
+      },
+    });
+    expect(httpResponse.statusCode).toBe(400);
+    expect(httpResponse.body).toEqual(new Error('any_message'));
+  });
 });
