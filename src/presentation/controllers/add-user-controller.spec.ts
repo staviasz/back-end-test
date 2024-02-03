@@ -1,9 +1,21 @@
+import { AddAccount, AddAccountData } from 'src/domain/protocols/add-account';
 import { RequiredFieldError } from '../errors/required-field-error';
 import { AddUserController } from './add-user-controller';
 
+const makeAddAccount = (): AddAccount => {
+  class AddAccountStub implements AddAccount {
+    perform(data: AddAccountData): Promise<string | Error> {
+      return Promise.resolve('token');
+    }
+  }
+  return new AddAccountStub();
+};
+
+const addAccountStub = makeAddAccount();
+
 describe('AddUserController', () => {
   it('Should return 400 if name field is not provided', async () => {
-    const sut = new AddUserController();
+    const sut = new AddUserController(addAccountStub);
     const httpResponse = await sut.execute({
       body: {
         email: 'any_email@mail.com',
@@ -16,7 +28,7 @@ describe('AddUserController', () => {
   });
 
   it('Should return 400 if email field is not provided', async () => {
-    const sut = new AddUserController();
+    const sut = new AddUserController(addAccountStub);
     const httpResponse = await sut.execute({
       body: {
         name: 'any_name',
@@ -29,7 +41,7 @@ describe('AddUserController', () => {
   });
 
   it('Should return 400 if password field is not provided', async () => {
-    const sut = new AddUserController();
+    const sut = new AddUserController(addAccountStub);
     const httpResponse = await sut.execute({
       body: {
         name: 'any_name',
@@ -42,7 +54,7 @@ describe('AddUserController', () => {
   });
 
   it('Should return 400 if passwordConfirmation field is not provided', async () => {
-    const sut = new AddUserController();
+    const sut = new AddUserController(addAccountStub);
     const httpResponse = await sut.execute({
       body: {
         name: 'any_name',
@@ -55,7 +67,7 @@ describe('AddUserController', () => {
   });
 
   it('Should return 400 if password is different from passwordConfirmation', async () => {
-    const sut = new AddUserController();
+    const sut = new AddUserController(addAccountStub);
     const httpResponse = await sut.execute({
       body: {
         name: 'any_name',
@@ -66,5 +78,23 @@ describe('AddUserController', () => {
     });
     expect(httpResponse.statusCode).toBe(400);
     expect(httpResponse.body).toEqual(new Error('Password is different from passwordConfirmation'));
+  });
+
+  it('Should call AddAccount with correct values', async () => {
+    const sut = new AddUserController(addAccountStub);
+    const performSpy = jest.spyOn(addAccountStub, 'perform');
+    await sut.execute({
+      body: {
+        name: 'any_name',
+        email: 'any_email@mail.com',
+        password: 'any_password',
+        passwordConfirmation: 'any_password',
+      },
+    });
+    expect(performSpy).toHaveBeenCalledWith({
+      name: 'any_name',
+      email: 'any_email@mail.com',
+      password: 'any_password',
+    });
   });
 });
