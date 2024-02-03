@@ -9,7 +9,7 @@ const makeFakeAddAccountData = (): AddAccountData => ({
   password: 'any_password',
 });
 
-const makeFakeAccount = (): AccountModel => ({
+const makeFakeAccountModel = (): AccountModel => ({
   id: 'any_id',
   name: 'any_name',
   email: 'any_email@mail.com',
@@ -43,5 +43,14 @@ describe('AddAccountUseCase', () => {
     const loadByEmailSpy = jest.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail');
     await sut.perform(makeFakeAddAccountData());
     expect(loadByEmailSpy).toHaveBeenCalledWith('any_email@mail.com');
+  });
+
+  it('Should return a Error if LoadAccountByEmailRepository returns an Account', async () => {
+    const { sut, loadAccountByEmailRepositoryStub } = makeSut();
+    jest
+      .spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail')
+      .mockReturnValueOnce(Promise.resolve(makeFakeAccountModel()));
+    const result = await sut.perform(makeFakeAddAccountData());
+    expect(result).toEqual(new Error(`Email 'any_email@mail.com' is invalid`));
   });
 });
