@@ -16,6 +16,18 @@ export class AddUserController implements Controller {
         body: new RequiredFieldError('The email field is required'),
       };
     }
+    if (!httpRequest.body.password) {
+      return {
+        statusCode: 400,
+        body: new RequiredFieldError('The password field is required'),
+      };
+    }
+    if (!httpRequest.body.passwordConfirmation) {
+      return {
+        statusCode: 400,
+        body: new RequiredFieldError('The passwordConfirmation field is required'),
+      };
+    }
     return Promise.resolve({ statusCode: 0, body: 'data' });
   }
 }
