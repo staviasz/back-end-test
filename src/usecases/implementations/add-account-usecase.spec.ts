@@ -2,6 +2,7 @@ import { AccountModel } from 'src/domain/models/account';
 import { AddAccountData } from 'src/domain/protocols/add-account';
 import { AddAccountUseCase } from './add-account-usecase';
 import { LoadAccountByEmailRepository } from '../protocols/db/load-account-by-email-repository';
+import { Hasher } from '../protocols/cryptography/hasher';
 
 const makeFakeAddAccountData = (): AddAccountData => ({
   name: 'any_name',
@@ -26,15 +27,26 @@ const makeLoadAccountByEmailRepositoryStub = (): LoadAccountByEmailRepository =>
   return new LoadAccountByEmailRepositoryStub();
 };
 
+const makeHasher = (): Hasher => {
+  class HasherStub implements Hasher {
+    async hash(value: string): Promise<string> {
+      return await Promise.resolve('hashed_password');
+    }
+  }
+  return new HasherStub();
+};
+
 interface SutTypes {
   sut: AddAccountUseCase;
   loadAccountByEmailRepositoryStub: LoadAccountByEmailRepository;
+  hasherStub: Hasher;
 }
 
 const makeSut = (): SutTypes => {
   const loadAccountByEmailRepositoryStub = makeLoadAccountByEmailRepositoryStub();
-  const sut = new AddAccountUseCase(loadAccountByEmailRepositoryStub);
-  return { sut, loadAccountByEmailRepositoryStub };
+  const hasherStub = makeHasher();
+  const sut = new AddAccountUseCase(loadAccountByEmailRepositoryStub, hasherStub);
+  return { sut, loadAccountByEmailRepositoryStub, hasherStub };
 };
 
 describe('AddAccountUseCase', () => {
@@ -61,5 +73,12 @@ describe('AddAccountUseCase', () => {
       .mockReturnValueOnce(Promise.reject(new Error('any_message')));
     const promise = sut.perform(makeFakeAddAccountData());
     await expect(promise).rejects.toThrow(new Error('any_message'));
+  });
+
+  it('Should call Hasher with correct password', async () => {
+    const { sut, hasherStub } = makeSut();
+    const hashSpy = jest.spyOn(hasherStub, 'hash');
+    await sut.perform(makeFakeAddAccountData());
+    expect(hashSpy).toHaveBeenCalledWith('any_password');
   });
 });
