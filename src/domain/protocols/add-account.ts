@@ -5,5 +5,5 @@ export interface AddAccountData {
 }
 
 export interface AddAccount {
-  perform: (data: AddAccountData) => Promise<string>;
+  perform: (data: AddAccountData) => Promise<Error | string>;
 }

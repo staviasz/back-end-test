@@ -4,10 +4,10 @@ import { LoadAccountByEmailRepository } from '../protocols/db/load-account-by-em
 export class AddAccountUseCase implements AddAccount {
   constructor(private readonly loadAccountByEmailRepository: LoadAccountByEmailRepository) {}
 
-  async perform(data: AddAccountData): Promise<string> {
+  async perform(data: AddAccountData): Promise<Error | string> {
     const loadAccountResult = await this.loadAccountByEmailRepository.loadByEmail(data.email);
     if (loadAccountResult) {
-      throw new Error(`Email '${data.email}' is invalid`);
+      return new Error(`Email '${data.email}' is invalid`);
     }
     return '';
   }
