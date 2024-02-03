@@ -41,5 +41,6 @@ export class AddUserController implements Controller {
     if (addAccountResult instanceof Error) {
       return { statusCode: 400, body: addAccountResult };
     }
+    return { statusCode: 200, body: addAccountResult };
   }
 }
