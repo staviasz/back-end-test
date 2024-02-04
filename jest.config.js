@@ -14,6 +14,6 @@ module.exports =  {
     '!<rootDir>/src/validators/**/*.ts'
   ],
   moduleNameMapper: {
-    '@/(.*)': '<rootDir>/src/$1'
+    'src/(.*)': '<rootDir>/src/$1'
   }
 }
