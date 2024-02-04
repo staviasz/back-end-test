@@ -124,6 +124,6 @@ describe('AddUserController', () => {
       },
     });
     expect(httpResponse.statusCode).toBe(200);
-    expect(httpResponse.body).toBe('token');
+    expect(httpResponse.body).toEqual({ accessToken: 'token' });
   });
 });
