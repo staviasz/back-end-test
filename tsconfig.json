@@ -12,7 +12,9 @@
     "rootDir": "./src",
     "baseUrl": "./src",
     "paths": {
-      "src/*": ["*"]
+      "src/*": [
+        "*"
+      ]
     },
     "incremental": false,
     "skipLibCheck": true,
@@ -22,6 +24,10 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

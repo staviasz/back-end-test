@@ -1,49 +1,26 @@
-import { validate } from 'class-validator';
 import { AddAccount } from 'src/domain/protocols/add-account';
+import { ValidatorSchema } from 'src/usecases/protocols/dataValidator/validatorSchema';
 import { Controller } from '../contracts/controller';
 import { CreateUserDto } from '../dto/create-user.dto';
+import { SchemaError } from '../errors/schema-error';
 import { HttpResponse } from '../types/http';
+import { createUserSchema } from '../validators/schema-create-user';
 
 export class AddUserController implements Controller {
-  constructor(private readonly addAccount: AddAccount) {}
+  constructor(
+    private readonly addAccount: AddAccount,
+    private readonly validator: ValidatorSchema,
+  ) {}
 
   async execute(createUserDto: CreateUserDto): Promise<HttpResponse> {
-    console.log(createUserDto);
-    const errors = await validate(createUserDto);
-
-    if (errors.length > 0) {
-      // Se houver erros de validação, trate-os aqui
-      console.error('Erros de validação:', errors);
-      throw new Error('Erro de validação');
+    const messageError = this.validator.validate(createUserDto, createUserSchema);
+    if (messageError) {
+      return { statusCode: 400, body: new SchemaError(messageError) };
     }
 
-    // if (!httpRequest.body.name) {
-    //   return {
-    //     statusCode: 400,
-    //     body: new RequiredFieldError('The name field is required'),
-    //   };
-    // } else if (!httpRequest.body.email) {
-    //   return {
-    //     statusCode: 400,
-    //     body: new RequiredFieldError('The email field is required'),
-    //   };
-    // } else if (!httpRequest.body.password) {
-    //   return {
-    //     statusCode: 400,
-    //     body: new RequiredFieldError('The password field is required'),
-    //   };
-    // } else if (!httpRequest.body.passwordConfirmation) {
-    //   return {
-    //     statusCode: 400,
-    //     body: new RequiredFieldError('The passwordConfirmation field is required'),
-    //   };
-    // } else if (httpRequest.body.password !== httpRequest.body.passwordConfirmation) {
-    //   return {
-    //     statusCode: 400,
-    //     body: new Error('Password is different from passwordConfirmation'),
-    //   };
-    // }
-    console.log('passei aqui');
+    if (createUserDto.password !== createUserDto.passwordConfirmation) {
+      return { statusCode: 400, body: new SchemaError('Password is different from passwordConfirmation') };
+    }
 
     const addAccountResult = await this.addAccount.perform({
       name: createUserDto.name,
@@ -56,3 +33,30 @@ export class AddUserController implements Controller {
     return { statusCode: 200, body: { accessToken: addAccountResult } };
   }
 }
+
+// if (!httpRequest.body.name) {
+//   return {
+//     statusCode: 400,
+//     body: new RequiredFieldError('The name field is required'),
+//   };
+// } else if (!httpRequest.body.email) {
+//   return {
+//     statusCode: 400,
+//     body: new RequiredFieldError('The email field is required'),
+//   };
+// } else if (!httpRequest.body.password) {
+//   return {
+//     statusCode: 400,
+//     body: new RequiredFieldError('The password field is required'),
+//   };
+// } else if (!httpRequest.body.passwordConfirmation) {
+//   return {
+//     statusCode: 400,
+//     body: new RequiredFieldError('The passwordConfirmation field is required'),
+//   };
+// } else if (httpRequest.body.password !== httpRequest.body.passwordConfirmation) {
+//   return {
+//     statusCode: 400,
+//     body: new Error('Password is different from passwordConfirmation'),
+//   };
+// }
