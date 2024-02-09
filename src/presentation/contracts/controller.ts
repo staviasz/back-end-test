@@ -1,5 +1,6 @@
-import { HttpRequest, HttpResponse } from '../types/http';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { HttpResponse } from '../types/http';
 
 export interface Controller {
-  execute: (httpRequest: HttpRequest) => Promise<HttpResponse>;
+  execute: (createUserDto: CreateUserDto) => Promise<HttpResponse>;
 }
